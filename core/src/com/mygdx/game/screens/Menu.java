@@ -42,15 +42,15 @@ public class Menu implements Screen {
 
         root.pad(20);
 
-        /*final Label enterUserLabel = new Label("Username:", skin);
-        final TextField usernameField = new TextField("", skin);
+        final Label enterUserLabel = new Label("Username:", skin);
+        TextField usernameField = new TextField("", skin);
         TextButton okButton = new TextButton("OK", skin);
 
         root.add(enterUserLabel).padBottom(20).colspan(2);
         root.row();
         root.add(usernameField).fillX().uniformX().padBottom(20).colspan(2);
         root.row();
-        root.add(okButton).fillX().uniformX().colspan(2);*/
+        root.add(okButton).fillX().uniformX().colspan(2);
 
 
     }

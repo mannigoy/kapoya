@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.mygdx.game.screens.LoadingScreen;
 import com.mygdx.game.screens.Menu;
 import com.mygdx.game.screens.ScreenType;
 import com.mygdx.game.screens.SplashScreen;
@@ -17,7 +18,7 @@ public class MyGdxGame extends Game implements SplashScreen.SplashScreenListener
 
 	private SplashScreen splashScreen;
 	private EnumMap<ScreenType, Screen> screenCache;
-//	private Menu menuscreen;
+	//private LoadingScreen loadingScreen;
 
 
 	
@@ -25,7 +26,7 @@ public class MyGdxGame extends Game implements SplashScreen.SplashScreenListener
 	public void create () {
 		screenCache = new EnumMap<ScreenType, Screen>(ScreenType.class);
 		splashScreen = new SplashScreen(this);
-		//menuscreen=new Menu();
+	//	loadingScreen= new LoadingScreen(this);
 		setScreen(splashScreen);
 		splashScreen.setListener(new SplashScreen.SplashScreenListener() {
 
