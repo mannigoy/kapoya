@@ -21,7 +21,7 @@
       "fontColor": "white"
     },
     "huge": {
-
+      "font": "font_20",
       "fontColor": "white"
     },
     "info_frame": {
@@ -67,7 +67,7 @@
     }
   },
   "com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle": {
-    "default - horizontal": {
+    "default-horizontal": {
       "background": "knobAfter",
       "knob": "knob",
       "knobBefore": "knobBefore"

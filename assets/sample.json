@@ -176,7 +176,7 @@
 	"default": {
 		"parent": "toggle",
 		"font": "font",
-		"fontColor": "black",
+		"fontColor": "white",
 		"downFontColor": "black",
 		"checkedOverFontColor": "gray",
 		"up": "round-gray",

@@ -30,6 +30,8 @@ public class LoadingScreen extends ScreenAdapter {
     private boolean isMusicLoaded;
     private SpriteBatch batch;
     private Texture imgTexture;
+    private float progress;
+
 
     @Override
     public void show() {
@@ -41,19 +43,30 @@ public class LoadingScreen extends ScreenAdapter {
         skin=new Skin(Gdx.files.internal("sample.json"));
         stage=new Stage(new ScreenViewport());
 
-        imgTexture = new Texture(Gdx.files.internal("splash.png"));
+        imgTexture = new Texture("splash.png");
 
         uiTable = new Table();
-        uiTable.setBackground(new TextureRegionDrawable(new TextureRegion(imgTexture)));
+        uiTable.setFillParent(true);
         stage.addActor(uiTable);
-        uiTable.pad(20);
 
-        //progressBar = new ProgressBar(0,1,0.1f,false,skin);
-        pressAnyButtonInfo = new TextButton("pressAnyKey", skin);
-        pressAnyButtonInfo.setVisible(false);
-        pressAnyButtonInfo.getLabel().setWrap(true);
+
+        pressAnyButtonInfo = new TextButton("pressAnyKey", skin,"default");
+        pressAnyButtonInfo.setVisible(true);
+
 
         uiTable.add(pressAnyButtonInfo).expand().fillX().center().row();
+
+        uiTable.setBackground(new TextureRegionDrawable(new TextureRegion(imgTexture)));
+
+
+
+
+
+
+        progressBar = new ProgressBar(0,1,0.1f,false,skin);
+        uiTable.add(progressBar).expandX().fillX().pad(15, 50, 175, 50).bottom();
+
+
 
     }
 
@@ -72,7 +85,7 @@ public class LoadingScreen extends ScreenAdapter {
 
     @Override
     public void hide() {
-        super.hide();
+        imgTexture.dispose();
     }
 
     @Override
@@ -90,6 +103,19 @@ public class LoadingScreen extends ScreenAdapter {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+    }
+    public void setProgress(final float progress) {
+        progressBar.setValue(progress);
+        if (progress >= 1 && !pressAnyButtonInfo.isVisible()) {
+            pressAnyButtonInfo.setVisible(true);
+            pressAnyButtonInfo.setColor(1, 1, 1, 0);
+            pressAnyButtonInfo.addAction(forever(sequence(alpha(1, 1), alpha(0, 1))));
+        }
+    }
+    private void updateProgress(float delta) {
+        // Simulate progress with a timer
+        progress += delta / 5; // Adjust the divisor to control the speed of progress
+        setProgress(Math.min(progress, 1)); // Ensure progress doesn't exceed 1
     }
 
 }
