@@ -1,11 +1,16 @@
 package com.mygdx.game.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,20 +23,28 @@ import com.mygdx.game.MyGdxGame;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class LoadingScreen extends ScreenAdapter {
+   // final Application app;
     public Skin skin;
     public Stage stage;
     private final MyGdxGame context;
-    public LoadingScreen(final MyGdxGame context) {
-        this.context = context;
-    }
+
     private Table uiTable;
-    private ProgressBar progressBar;
     private TextButton pressAnyButtonInfo;
     private boolean isMusicLoaded;
     private SpriteBatch batch;
     private Texture imgTexture;
     private float progress;
+    private final ShapeRenderer shapeRenderer;
+    public LoadingScreen(final MyGdxGame context) {
+        this.context = context;
+        this.shapeRenderer = new ShapeRenderer();
 
+    }
+
+    private void queueAssets() {
+
+        context.assetManager.load("sample.atlas", TextureAtlas.class);
+    }
 
     @Override
     public void show() {
@@ -54,28 +67,43 @@ public class LoadingScreen extends ScreenAdapter {
         pressAnyButtonInfo.setVisible(true);
 
 
-        uiTable.add(pressAnyButtonInfo).expand().fillX().center().row();
+
 
         uiTable.setBackground(new TextureRegionDrawable(new TextureRegion(imgTexture)));
 
-
-
-
-
-
-        progressBar = new ProgressBar(0,1,0.1f,false,skin);
-        uiTable.add(progressBar).expandX().fillX().pad(15, 50, 175, 50).bottom();
-
-
-
+       // shapeRenderer.setProjectionMatrix(context.camera.combined);
+        this.progress=0f;
+        queueAssets();
     }
 
     @Override
     public void render(float delta) {
+         Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        updateProgress(delta);
+
         batch.begin();
         batch.end();
+
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+
+        if (context.assetManager.update() && progress >= context.assetManager.getProgress() - .001f) {
+            // Assets are loaded, show the "Press Any Button" message
+            pressAnyButtonInfo.setVisible(true);
+            uiTable.setBackground(new TextureRegionDrawable(new TextureRegion(imgTexture)));
+        } else {
+            // Assets are still loading, hide the "Press Any Button" message and progress bar
+            pressAnyButtonInfo.setVisible(false);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.BLACK);
+            shapeRenderer.rect(32, context.camera.viewportHeight / 2 - 8, context.camera.viewportWidth - 64, 16);
+
+            shapeRenderer.setColor(Color.BLUE);
+            shapeRenderer.rect(32, context.camera.viewportHeight / 2 - 8, progress * (context.camera.viewportWidth - 64), 16);
+            shapeRenderer.end();
+        }
     }
 
     @Override
@@ -83,10 +111,7 @@ public class LoadingScreen extends ScreenAdapter {
         super.resize(width, height);
     }
 
-    @Override
-    public void hide() {
-        imgTexture.dispose();
-    }
+
 
     @Override
     public void pause() {
@@ -100,22 +125,15 @@ public class LoadingScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        stage.dispose();
-        skin.dispose();
-        batch.dispose();
-    }
-    public void setProgress(final float progress) {
-        progressBar.setValue(progress);
-        if (progress >= 1 && !pressAnyButtonInfo.isVisible()) {
-            pressAnyButtonInfo.setVisible(true);
-            pressAnyButtonInfo.setColor(1, 1, 1, 0);
-            pressAnyButtonInfo.addAction(forever(sequence(alpha(1, 1), alpha(0, 1))));
-        }
+        shapeRenderer.dispose();
     }
     private void updateProgress(float delta) {
-        // Simulate progress with a timer
-        progress += delta / 5; // Adjust the divisor to control the speed of progress
-        setProgress(Math.min(progress, 1)); // Ensure progress doesn't exceed 1
+        progress = MathUtils.lerp(progress, context.assetManager.getProgress(), .1f);
+        if (context.assetManager.update() && progress >= context.assetManager.getProgress() - .001f) {
+            if (!uiTable.getChildren().contains(pressAnyButtonInfo, true)) {
+                uiTable.add(pressAnyButtonInfo).expand().fillX().center().row();
+            }
+        }
     }
 
 }
